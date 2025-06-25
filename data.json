@@ -35,5 +35,14 @@
       "codigo": 1,
       "nome": "Historia"
     }
+  },
+  "matriculas": {
+    "CPFS": [],
+    "1": {
+      "table_name": "matriculas",
+      "codigo_da_turma": "1",
+      "codigo_do_estudante": "1",
+      "codigo": 1
+    }
   }
 }

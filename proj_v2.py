@@ -58,12 +58,25 @@ class JsonModel:
 
         return code
     
-    def update(self, old_code, new_code):
+    def update(self, old_code):
         data = self._load_data()
 
         if self.table_name not in data:
             print(f"Tabela {self.table_name} não encontrada.")
             return False
+
+        for key, value in self.__dict__.items():
+            if key == "table_name":
+                continue
+            
+            if key not in data[self.table_name][old_code]:
+                print(f"O objeto send editado não tem a propriedade {key}")
+
+            data[self.table_name][old_code][key] = value
+
+        self._save_data(data)
+        return True
+
         
 
     @classmethod
@@ -170,6 +183,27 @@ def gen_menu(menu_header:str, options:list, return_msg:str=None):
     
         return user_option
 
+def check_code(code, db_obj):
+    if not code.isdigit():
+        print("Código inválido. O código é necessariamente um número inteiro.")
+        wait()
+        return -1
+
+    model = MAIN_DICT.get(db_obj)
+    data = model.load(db_obj.lower())
+    
+    if not data:
+        print(f"Não há {db_obj.lower()} cadastrados")
+        wait()
+        return -1
+    
+    if code not in data:
+        print(f"Código {code} não encontrado para {db_obj.lower()}.")
+        wait()
+        return -1
+
+    return data
+
 
 def include(db_obj, get_obj=False):
     print("===== INCLUSÃO =====\n")
@@ -187,7 +221,7 @@ def include(db_obj, get_obj=False):
 
         if key == "nome":
             # checagem de input básica p/ nomes
-            if len(value) < 2:
+            if len(value) == 1 or (len(value) == 0 and not get_obj):
                 print("O nome informado é inválido")
                 wait()
                 return
@@ -195,7 +229,7 @@ def include(db_obj, get_obj=False):
         elif key == "cpf":
             # checagem de input básica p/ CPF
             value = value.replace(".", "").replace("-", "")
-            if len(value) != 11 or not value.isdigit():
+            if len(value) != 11 or not value.isdigit() and not get_obj:
                 print("O CPF informado é inválido")
                 wait()
                 return
@@ -238,30 +272,8 @@ def show_list(db_obj):
     return
 
 
-def check_code(code, db_obj):
-    if not code.isdigit():
-        print("Código inválido. O código é necessariamente um número inteiro.")
-        wait()
-        return -1
-
-    model = MAIN_DICT.get(db_obj)
-    data = model.load(db_obj.lower())
-    
-    if not data:
-        print(f"Não há {db_obj.lower()} cadastrados")
-        wait()
-        return -1
-    
-    if code not in data:
-        print(f"Código {code} não encontrado para {db_obj.lower()}.")
-        wait()
-        return -1
-
-    return data
-
-
 def update(db_obj):
-    print("===== EXCLUSÃO =====\n")
+    print("===== EDITAR =====\n")
     print(f"Informe o código do(a) {db_obj.upper()} a ser atualizado:", end=" ")
     old_code = input().strip()
 
@@ -269,11 +281,10 @@ def update(db_obj):
     if data == -1:
         return
     
-    new_info = include(db_obj, get_obj=True)
-    if not new_info:
+    model = include(db_obj, get_obj=True)
+    if not model:
         return
     
-    model = MAIN_DICT.get(db_obj)
     model.update(old_code)
 
 
