@@ -41,12 +41,13 @@ class JsonModel:
             data[self.table_name]["CPFS"] = []
         
         # Verifica se o CPF já está cadastrado
-        if self.cpf in data[self.table_name]["CPFS"]:
+        if "cpf" in self.__dict__ and self.cpf in data[self.table_name]["CPFS"]:
             print(f"CPF {self.cpf} já cadastrado.")
             return
         
         # Adiciona o CPF à lista de CPFs
-        data[self.table_name]["CPFS"].append(self.cpf)
+        if "cpf" in self.__dict__:
+            data[self.table_name]["CPFS"].append(self.cpf)
 
         # Gera um código único para o registro
         code = len(data[self.table_name])
@@ -175,13 +176,11 @@ def include(db_obj, get_obj=False):
     
     model = MAIN_DICT.get(db_obj)()
 
-    info = {}
     for key in model.__dict__:
-        print('k', key)
         if  key == "codigo" or key == "table_name":
             continue
 
-        print(f"Informe o(a) {key.upper()} do(a) {db_obj.upper()}:", end=" ")
+        print(f"Informe o(a) {key.upper().replace("_", " ")}: ", end=" ")
 
         value = input()
         value = " ".join([n.strip() for n in value.split()]) # remover mult espaços entre nomes
@@ -202,13 +201,12 @@ def include(db_obj, get_obj=False):
                 return
     
         wait()      
-        info[key] = value
+        setattr(model, key, value)
     
-    model_instance = model(**info)
     if get_obj:
-        return model_instance
+        return model
     
-    code = model_instance.save()
+    code = model.save()
 
     if code:
         print(f"{db_obj.title()} cadastrado com sucesso! Código único gerado: {code}")

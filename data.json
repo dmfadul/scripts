@@ -1,0 +1,39 @@
+{
+  "alunos": {
+    "CPFS": [
+      "63467313272",
+      "12345678955"
+    ],
+    "1": {
+      "table_name": "alunos",
+      "codigo": 1,
+      "nome": "David",
+      "cpf": "63467313272"
+    },
+    "2": {
+      "table_name": "alunos",
+      "codigo": 2,
+      "nome": "George",
+      "cpf": "12345678955"
+    }
+  },
+  "professores": {
+    "CPFS": [
+      "99999999911"
+    ],
+    "1": {
+      "table_name": "professores",
+      "codigo": 1,
+      "nome": "Carlos",
+      "cpf": "99999999911"
+    }
+  },
+  "disciplinas": {
+    "CPFS": [],
+    "1": {
+      "table_name": "disciplinas",
+      "codigo": 1,
+      "nome": "Historia"
+    }
+  }
+}
